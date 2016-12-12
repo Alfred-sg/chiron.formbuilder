@@ -1,9 +1,18 @@
-import Form from "./deps/Form.js";
-import CreateClass from "./deps/CreateClass.js";
+import ChironForm from "./deps/ChironForm";
 
-let ChironFormBuilder={
-	Form:Form,
-	CreateClass:CreateClass
+$.ChironForm=ChironForm;
+
+$.prototype.chironformbuilder=function(options){
+	let self=this,
+		data=$(self).data("chiron-form");
+
+	if ( !arguments.length && data ){
+		return $(self).data("chiron-form");
+	};
+
+	if ( !data && $.type(options)==="object" ){
+		let form=ChironForm.createForm(self,options);
+		$(this).data("chiron-form",form);
+		return this;
+	};
 };
-
-export default ChironFormBuilder

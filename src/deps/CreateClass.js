@@ -1,7 +1,7 @@
 import FormItem from "./FormItem";
 import FormItemReconcile from "./FormItemReconcile";
 
-function CreateClass(type,methods){
+function createClass(type,methods){
 	class FormItemClass extends FormItem{
 		constructor(options){
 			super(options);
@@ -15,4 +15,4 @@ function CreateClass(type,methods){
 	return FormItemClass;
 };
 
-export default CreateClass
+export default createClass

@@ -1,15 +1,17 @@
+import scheme from "./FormScheme";
+import instanceMap from "./InstanceMap";
 import FormItemReconcile from "./FormItemReconcile";
 
-let guid=0,
-	instanceMap={};
+let guid=0;
 
 class ChironForm{
 	constructor(parent,options){
-		let self=this;
+		let self=this,
+			instMap=instanceMap();
 
 		this.$parent=$(parent);
 		this.setting=$.extend(true,{},options);
-		this.scheme=$.extend(true,{},ChironForm.scheme);
+		this.scheme=$.extend(true,{},scheme());
 		this.expando=$.now();
 		this.guid="chiron-form-"+(++guid);
 		this.formItems=[];
@@ -18,7 +20,7 @@ class ChironForm{
 		this.initItems=$.extend(true,[],self.setting.items);
 		this.itemsChange=false;
 
-		instanceMap[self.guid]=this;
+		instanceMap(self.guid,self);
 
 		this._init();
 	};
@@ -27,11 +29,12 @@ class ChironForm{
 // 销毁实例
 ChironForm.prototype.destroy=function(){
 	let self=this,
-		keys=Object.keys(this);
+		keys=Object.keys(this),
+		instMap=instanceMap();
 
 	this.teardown();
 
-	delete instanceMap[self.guid];
+	delete instMap[self.guid];
 
 	$.each(keys,function(_,key){
 		delete self[key];
@@ -91,16 +94,17 @@ ChironForm.prototype._renderFormItems=function(){
 		delete props.scheme.form;
 
 		// 绘制表单过程中，添加表单项前，触发"fieldWillCreate"事件，用于更改该表单项的配置
-		self.$parent.trigger("fieldWillCreate",props);
+		self.$parent.trigger("fieldWillCreate",props,index,self);
 
 		formItem=new FormItemReconcile[item.type](props);
+		formItem.index=index;
 		$formItem=formItem.init();
 
 		self.formItems.push(formItem);
 		self.$content.append($formItem);
 
 		// 绘制表单过程中，添加表单项时，触发"fieldDidCreate"事件，用于操纵新添加的表单项
-		self.$parent.trigger("fieldDidCreate",$formItem);
+		self.$parent.trigger("fieldDidCreate",formItem,index,self);
 	});
 
 	// 绘制表单过程中，添加表单项完成时，触发"fieldsDidCreate"事件，用于操纵所有表单项
@@ -251,49 +255,6 @@ ChironForm.prototype.clean=function(){
 	$.each(self.formItems,function(_,formItem){
 		formItem.clean();
 	});
-};
-
-// 表单显示框架
-ChironForm.scheme={
-	form:{
-		class:"form-horizontal"
-	},
-	outterWrap:{
-		class:"form-group"
-	},
-	label:{
-		class:"control-label col-sm-1"
-	},
-	innerWrap:{
-		class:"col-sm-5",
-		width:400
-	},
-	field:{
-		class:"form-control"
-	},
-	// 单选框、复选框包裹元素配置
-	checkboxWrap:{
-		class:"control-label",
-		css:{marginRight:"10px"}
-	},
-	btnsWrap:{
-		class:"col-sm-offset-1"
-	},
-	btn:{
-		class:"btn btn-default",
-		css:{marginRight:"10px"}
-	}
-}
-
-// 设置表单框架
-ChironForm.makeScheme=function(options){
-	ChironForm.scheme=options;
-};
-
-// 通过guid获取实例
-ChironForm.getInstance=function(index){
-	let guid="chiron-form-"+index;
-	return instanceMap[guid];
 };
 
 export default ChironForm

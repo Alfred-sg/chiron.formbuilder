@@ -1,5 +1,5 @@
 import Form from "./deps/Form.js";
-import CreateClass from "./deps/CreateClass.js";
+import createClass from "./deps/createClass.js";
 
 window.form=new Form("#formWrap",{
 	items:[{
@@ -17,6 +17,8 @@ window.form=new Form("#formWrap",{
 		items:[{text:"春季",value:"spring"},{text:"夏季",value:"summer"},{
 				text:"秋季",value:"autumn"},{text:"冬季",value:"winter"}],
 		label:"最爱的季节"
+	},{
+		type:"upload",name:"file",label:"上传文件"
 	}],
 	btns:[{
 		text:"提交",
