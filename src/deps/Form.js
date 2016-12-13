@@ -1,13 +1,12 @@
 import scheme from "./FormScheme";
-import instanceMap from "./InstanceMap";
+import {setInstance} from "./InstanceMap";
 import FormItemReconcile from "./FormItemReconcile";
 
 let guid=0;
 
 class ChironForm{
 	constructor(parent,options){
-		let self=this,
-			instMap=instanceMap();
+		let self=this;
 
 		this.$parent=$(parent);
 		this.setting=$.extend(true,{},options);
@@ -20,7 +19,7 @@ class ChironForm{
 		this.initItems=$.extend(true,[],self.setting.items);
 		this.itemsChange=false;
 
-		instanceMap(self.guid,self);
+		setInstance(self.guid,self);
 
 		this._init();
 	};
@@ -29,12 +28,11 @@ class ChironForm{
 // 销毁实例
 ChironForm.prototype.destroy=function(){
 	let self=this,
-		keys=Object.keys(this),
-		instMap=instanceMap();
+		keys=Object.keys(this);
 
 	this.teardown();
 
-	delete instMap[self.guid];
+	setInstance(self.guid);
 
 	$.each(keys,function(_,key){
 		delete self[key];

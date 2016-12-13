@@ -1,5 +1,5 @@
 import scheme from "./FormScheme";
-import instanceMap from "./InstanceMap";
+import {getInstance,setInstance} from "./InstanceMap";
 import createClass from "./createClass.js";
 import Form from "./Form.js";
 
@@ -9,7 +9,7 @@ let ChironForm={
 	createForm:function(parent,options){
 		return new Form(parent,options)
 	},
-	getInstance:instanceMap
+	getInstance:getInstance
 };
 
 export default ChironForm

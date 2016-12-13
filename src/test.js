@@ -1,7 +1,4 @@
-import Form from "./deps/Form.js";
-import createClass from "./deps/createClass.js";
-
-window.form=new Form("#formWrap",{
+$("#formWrap").chironformbuilder({
 	items:[{
 		type:"input",label:"姓名",placeholder:"请输入您的姓名",name:"name"
 	},{
@@ -28,7 +25,7 @@ window.form=new Form("#formWrap",{
 	}]
 });
 
-form.setData({
+$("#formWrap").chironformbuilder().setData({
 	name:"nacy",
 	address:"ad street",
 	sex:"female",

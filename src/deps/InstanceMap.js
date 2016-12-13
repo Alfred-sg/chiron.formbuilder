@@ -1,17 +1,28 @@
-var InstanceMap={};
+let InstanceMap={};
 
-function instanceMap(key){
-	if ( !arguments.length ){
-		return InstanceMap;
-	}else if( arguments.length==1 ){
-		return FormScheme[key];
+function setInstance(key,inst){
+	if( arguments.length==1 ){
+		delete InstanceMap[key];
 	}else{
 		let key=arguments[0],
 			value=arguments[1];
 
 		InstanceMap[key]=value;
-		console.log(InstanceMap)
 	};
 };
 
-export default instanceMap
+function getInstance(key){
+	let guid="chiron-form-"+key;
+
+	if( !arguments.length ){
+		console.log(123)
+		return InstanceMap;
+	};
+
+	if( InstanceMap[guid] ){
+		return InstanceMap[guid];
+	};
+};
+
+export {setInstance as setInstance}
+export {getInstance as getInstance}

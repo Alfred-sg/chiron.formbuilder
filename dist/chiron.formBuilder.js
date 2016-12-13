@@ -85,8 +85,6 @@
 
 	var _InstanceMap = __webpack_require__(3);
 
-	var _InstanceMap2 = _interopRequireDefault(_InstanceMap);
-
 	var _createClass = __webpack_require__(4);
 
 	var _createClass2 = _interopRequireDefault(_createClass);
@@ -103,7 +101,7 @@
 		createForm: function createForm(parent, options) {
 			return new _Form2.default(parent, options);
 		},
-		getInstance: _InstanceMap2.default
+		getInstance: _InstanceMap.getInstance
 	};
 
 	exports.default = ChironForm;
@@ -186,21 +184,32 @@
 	});
 	var InstanceMap = {};
 
-	function instanceMap(key) {
-		if (!arguments.length) {
-			return InstanceMap;
-		} else if (arguments.length == 1) {
-			return FormScheme[key];
+	function setInstance(key, inst) {
+		if (arguments.length == 1) {
+			delete InstanceMap[key];
 		} else {
 			var _key = arguments[0],
 			    value = arguments[1];
 
 			InstanceMap[_key] = value;
-			console.log(InstanceMap);
 		};
 	};
 
-	exports.default = instanceMap;
+	function getInstance(key) {
+		var guid = "chiron-form-" + key;
+
+		if (!arguments.length) {
+			console.log(123);
+			return InstanceMap;
+		};
+
+		if (InstanceMap[guid]) {
+			return InstanceMap[guid];
+		};
+	};
+
+	exports.setInstance = setInstance;
+	exports.getInstance = getInstance;
 
 /***/ },
 /* 4 */
@@ -866,8 +875,6 @@
 
 	var _InstanceMap = __webpack_require__(3);
 
-	var _InstanceMap2 = _interopRequireDefault(_InstanceMap);
-
 	var _FormItemReconcile = __webpack_require__(8);
 
 	var _FormItemReconcile2 = _interopRequireDefault(_FormItemReconcile);
@@ -881,8 +888,7 @@
 	var ChironForm = function ChironForm(parent, options) {
 		_classCallCheck(this, ChironForm);
 
-		var self = this,
-		    instMap = (0, _InstanceMap2.default)();
+		var self = this;
 
 		this.$parent = $(parent);
 		this.setting = $.extend(true, {}, options);
@@ -895,7 +901,7 @@
 		this.initItems = $.extend(true, [], self.setting.items);
 		this.itemsChange = false;
 
-		(0, _InstanceMap2.default)(self.guid, self);
+		(0, _InstanceMap.setInstance)(self.guid, self);
 
 		this._init();
 	};
@@ -905,12 +911,11 @@
 	// 销毁实例
 	ChironForm.prototype.destroy = function () {
 		var self = this,
-		    keys = Object.keys(this),
-		    instMap = (0, _InstanceMap2.default)();
+		    keys = Object.keys(this);
 
 		this.teardown();
 
-		delete instMap[self.guid];
+		(0, _InstanceMap.setInstance)(self.guid);
 
 		$.each(keys, function (_, key) {
 			delete self[key];
