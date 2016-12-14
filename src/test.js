@@ -16,6 +16,8 @@ $("#formWrap").chironformbuilder({
 		label:"最爱的季节"
 	},{
 		type:"upload",name:"file",label:"上传文件"
+	},{
+		type:"cascader",label:"级联",name:"cascader",label:"请选择级联数据"
 	}],
 	btns:[{
 		text:"提交",

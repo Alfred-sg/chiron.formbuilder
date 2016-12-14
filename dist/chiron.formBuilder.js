@@ -89,7 +89,7 @@
 
 	var _createClass2 = _interopRequireDefault(_createClass);
 
-	var _Form = __webpack_require__(15);
+	var _Form = __webpack_require__(20);
 
 	var _Form2 = _interopRequireDefault(_Form);
 
@@ -483,6 +483,10 @@
 
 	var _Upload2 = _interopRequireDefault(_Upload);
 
+	var _Cascader = __webpack_require__(15);
+
+	var _Cascader2 = _interopRequireDefault(_Cascader);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var FormItemReconcile = {
@@ -491,7 +495,8 @@
 		radio: _Radio2.default,
 		checkbox: _Checkbox2.default,
 		select: _Select2.default,
-		upload: _Upload2.default
+		upload: _Upload2.default,
+		cascader: _Cascader2.default
 	};
 
 	exports.default = FormItemReconcile;
@@ -861,6 +866,78 @@
 
 /***/ },
 /* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _FormItem2 = __webpack_require__(5);
+
+	var _FormItem3 = _interopRequireDefault(_FormItem2);
+
+	__webpack_require__(16);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Input = function (_FormItem) {
+		_inherits(Input, _FormItem);
+
+		function Input(options) {
+			_classCallCheck(this, Input);
+
+			var _this = _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).call(this, options));
+
+			_this.type = "cascader";
+			return _this;
+		}
+
+		return Input;
+	}(_FormItem3.default);
+
+	;
+
+	Input.prototype._createField = function () {
+		var self = this,
+		    props = $.extend(true, {}, self.scheme.field, self.setting);
+
+		delete props.label;
+		props.readonly = true;
+		props.autocomplete = "off";
+
+		this.$fieldWraps = this.$fields = [$("<input>", props).css({ backgroundColor: "white" })];
+
+		this.$fields[0].on("click", function () {
+			var that = this;
+			console.log(111);
+			$("<div/>", {
+				class: "ant-cascader-menus",
+				html: "<ul><li>1</li><li>2</li></ul>"
+			}).insertAfter(that);
+		});
+	};
+
+	exports.default = Input;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

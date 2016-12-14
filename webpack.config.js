@@ -30,17 +30,20 @@ module.exports = {
         loaders:[  
             { test:/\.js$/, exclude:/node_modules/, loaders: ['babel'] },
             { test:/\.jsx$/, exclude:/node_modules/, loaders: ['babel'] },
-            { test:/\.less$/, loader:ExtractTextPlugin.extract({
-                fallbackLoader: "style-loader",
-                loader: "css-loader!less-loader"}) 
+            { test:/\.less$/, exclude:/node_modules/, 
+              loader:ExtractTextPlugin.extract("style-loader", "css-loader", "less-loader") 
             },
-            { test:/\.css$/, loader:ExtractTextPlugin.extract({
-                fallbackLoader: "style-loader",
-                loader: "css-loader"})
+            { test:/\.css$/, exclude:/node_modules/, loader:ExtractTextPlugin.extract("style-loader", "css-loader") 
+                // loaders:['style','css'] 
             }
         ]
     },
     resolve:{
-    	  extensions:["",".coffee",".js"]
-    }
+        // 不需要填写扩展名
+    	extensions:["",".coffee",".js"]
+    },
+    plugins:[
+        // 分离css
+        new ExtractTextPlugin("[name].css")
+    ]
 };

@@ -46,6 +46,8 @@
 
 	"use strict";
 
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 	$("#formWrap").chironformbuilder({
 		items: [{
 			type: "input", label: "姓名", placeholder: "请输入您的姓名", name: "name"
@@ -64,7 +66,8 @@
 			label: "最爱的季节"
 		}, {
 			type: "upload", name: "file", label: "上传文件"
-		}],
+		}, _defineProperty({
+			type: "cascader", label: "级联", name: "cascader" }, "label", "请选择级联数据")],
 		btns: [{
 			text: "提交",
 			callback: function callback() {
