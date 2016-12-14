@@ -888,24 +888,24 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Input = function (_FormItem) {
-		_inherits(Input, _FormItem);
+	var Cascader = function (_FormItem) {
+		_inherits(Cascader, _FormItem);
 
-		function Input(options) {
-			_classCallCheck(this, Input);
+		function Cascader(options) {
+			_classCallCheck(this, Cascader);
 
-			var _this = _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).call(this, options));
+			var _this = _possibleConstructorReturn(this, (Cascader.__proto__ || Object.getPrototypeOf(Cascader)).call(this, options));
 
 			_this.type = "cascader";
 			return _this;
 		}
 
-		return Input;
+		return Cascader;
 	}(_FormItem3.default);
 
 	;
 
-	Input.prototype._createField = function () {
+	Cascader.prototype._createField = function () {
 		var self = this,
 		    props = $.extend(true, {}, self.scheme.field, self.setting);
 
@@ -915,17 +915,23 @@
 
 		this.$fieldWraps = this.$fields = [$("<input>", props).css({ backgroundColor: "white" })];
 
+		this._bindSepcialEvent();
+	};
+
+	Cascader.prototype._bindSepcialEvent = function () {
+		var self = this,
+		    $cascaderMenus = $("<div/>", {
+			class: "ant-cascader-menus",
+			html: "<ul class='ant-cascader-menu'><li class='ant-cascader-menu-item ant-cascader-menu-item-expand'>" + "1</li><li class='ant-cascader-menu-item ant-cascader-menu-item-expand'>2</li></ul>"
+		});
+
 		this.$fields[0].on("click", function () {
 			var that = this;
-			console.log(111);
-			$("<div/>", {
-				class: "ant-cascader-menus",
-				html: "<ul><li>1</li><li>2</li></ul>"
-			}).insertAfter(that);
+			$cascaderMenus.insertAfter(that);
 		});
 	};
 
-	exports.default = Input;
+	exports.default = Cascader;
 
 /***/ },
 /* 16 */

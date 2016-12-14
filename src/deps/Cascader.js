@@ -1,14 +1,14 @@
 import FormItem from "./FormItem";
 import  "../less/cascader.less";
 
-class Input extends FormItem{
+class Cascader extends FormItem{
 	constructor(options){
 		super(options);
 		this.type="cascader";
 	};
 };
 
-Input.prototype._createField=function(){
+Cascader.prototype._createField=function(){
 	let self=this,
 		props=$.extend(true,{},self.scheme.field,self.setting);
 
@@ -18,14 +18,22 @@ Input.prototype._createField=function(){
 
 	this.$fieldWraps=this.$fields=[$("<input>",props).css({backgroundColor:"white"})];
 
-	this.$fields[0].on("click",function(){
-		let that=this;
-		console.log(111);
-		$("<div/>",{
-			class:"ant-cascader-menus",
-			html:"<ul><li>1</li><li>2</li></ul>"
-		}).insertAfter(that);
-	})
+	this._bindSepcialEvent();
 };
 
-export default Input
+Cascader.prototype._bindSepcialEvent=function(){
+	let self=this,
+		$cascaderMenus=$("<div/>",{
+			class:"ant-cascader-menus",
+			html:"<ul class='ant-cascader-menu'><li class='ant-cascader-menu-item ant-cascader-menu-item-expand'>"+
+				"1</li><li class='ant-cascader-menu-item ant-cascader-menu-item-expand'>2</li></ul>"
+		});
+
+	this.$fields[0].on("click",function(){
+		let that=this;
+		$cascaderMenus.insertAfter(that);
+	})
+
+};
+
+export default Cascader
