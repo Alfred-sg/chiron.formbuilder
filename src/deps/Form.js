@@ -94,7 +94,7 @@ ChironForm.prototype._renderFormItems=function(){
 		// 绘制表单过程中，添加表单项前，触发"fieldWillCreate"事件，用于更改该表单项的配置
 		self.$parent.trigger("fieldWillCreate",props,index,self);
 
-		formItem=new FormItemReconcile[item.type](props);
+		formItem=new FormItemReconcile[item.type](props,self);
 		formItem.index=index;
 		$formItem=formItem.init();
 

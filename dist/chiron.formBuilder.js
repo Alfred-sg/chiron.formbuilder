@@ -89,7 +89,7 @@
 
 	var _createClass2 = _interopRequireDefault(_createClass);
 
-	var _Form = __webpack_require__(20);
+	var _Form = __webpack_require__(21);
 
 	var _Form2 = _interopRequireDefault(_Form);
 
@@ -285,11 +285,12 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var FormItem = function FormItem(options) {
+	var FormItem = function FormItem(options, form) {
 		_classCallCheck(this, FormItem);
 
 		this.scheme = $.extend(true, {}, options.scheme);
 		delete options.scheme;
+		this.relForm = form;
 		this.setting = $.extend(true, {}, options);
 	};
 
@@ -327,6 +328,22 @@
 		this._createField();
 
 		this.$outerWrap.append(self.$label);
+		$.each(self.$fieldWraps, function (_, $fieldWrap) {
+			self.$innerWrap.append($fieldWrap);
+		});
+		this.$outerWrap.append(self.$innerWrap);
+	};
+
+	FormItem.prototype.refresh = function (setting) {
+		var self = this;
+
+		this.setting = setting;
+
+		this.$innerWrap.html("");
+		this.$fieldWraps = [];
+		this.$fields = [];
+
+		this._createField();
 		$.each(self.$fieldWraps, function (_, $fieldWrap) {
 			self.$innerWrap.append($fieldWrap);
 		});
@@ -487,6 +504,10 @@
 
 	var _Cascader2 = _interopRequireDefault(_Cascader);
 
+	var _LinkageSelect = __webpack_require__(20);
+
+	var _LinkageSelect2 = _interopRequireDefault(_LinkageSelect);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var FormItemReconcile = {
@@ -496,7 +517,8 @@
 		checkbox: _Checkbox2.default,
 		select: _Select2.default,
 		upload: _Upload2.default,
-		cascader: _Cascader2.default
+		cascader: _Cascader2.default,
+		linkageSelect: _LinkageSelect2.default
 	};
 
 	exports.default = FormItemReconcile;
@@ -918,11 +940,26 @@
 		this._bindSepcialEvent();
 	};
 
+	function getItems(index) {
+		return [[{ text: "1", value: "1" }, { text: "2", value: "2" }], [{ text: "3", value: "3" }, { text: "4", value: "4" }]];
+	};
+
 	Cascader.prototype._bindSepcialEvent = function () {
 		var self = this,
-		    $cascaderMenus = $("<div/>", {
-			class: "ant-cascader-menus",
-			html: "<ul class='ant-cascader-menu'><li class='ant-cascader-menu-item ant-cascader-menu-item-expand'>" + "1</li><li class='ant-cascader-menu-item ant-cascader-menu-item-expand'>2</li></ul>"
+		    $ulOrigin = $("<ul/>", { class: "ant-cascader-menu" }),
+		    $liOrigin = $("<li/>", { class: "ant-cascader-menu-item ant-cascader-menu-item-expand" }),
+		    $cascaderMenus = $("<div/>", { class: "ant-cascader-menus" });
+
+		var columns = getItems(),
+		    $initUl = $ulOrigin.clone();
+
+		$.each(columns, function (_, items) {
+			var $menu = $ulOrigin.clone();
+			$.each(items, function (_, item) {
+
+				$menu.append($liOrigin.clone().text(item.text).attr("value", item.value));
+			});
+			$cascaderMenus.append($menu);
 		});
 
 		this.$fields[0].on("click", function () {
@@ -944,6 +981,85 @@
 /* 18 */,
 /* 19 */,
 /* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _FormItem2 = __webpack_require__(5);
+
+	var _FormItem3 = _interopRequireDefault(_FormItem2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var linkageSelect = function (_FormItem) {
+		_inherits(linkageSelect, _FormItem);
+
+		function linkageSelect(options) {
+			_classCallCheck(this, linkageSelect);
+
+			var _this = _possibleConstructorReturn(this, (linkageSelect.__proto__ || Object.getPrototypeOf(linkageSelect)).call(this, options));
+
+			_this.type = "cascader";
+			return _this;
+		}
+
+		return linkageSelect;
+	}(_FormItem3.default);
+
+	;
+
+	linkageSelect.prototype._createField = function () {
+		var self = this,
+		    props = $.extend(true, {}, self.scheme.field, self.setting);
+		console.log(self.setting);
+
+		delete props.label;
+
+		$.each(props.items, function (_, selectOpts) {
+			var $field = void 0,
+			    props = void 0,
+			    items = selectOpts.options;
+
+			delete selectOpts.options;
+
+			props = $.extend(true, {}, self.scheme.field, selectOpts);
+			$field = $("<select/>", props).addClass("pull-left").css({ marginRight: "10px", marginBottom: "10px", width: "150px" });
+
+			$.each(items, function (_, item) {
+				$field.append($("<option/>", item));
+			});
+
+			$field.on("change", function () {
+				self.refresh({
+					label: "级联下拉框",
+					items: [{ name: "linkageSelect1", options: [{ text: "11111", value: "1" }, { text: "2", value: "2" }] }, { name: "linkageSelect2", options: [{ text: "3", value: "3" }, { text: "4", value: "4" }] }]
+				});
+			});
+
+			if (self.$fields) {
+				self.$fields.push($field);
+			} else {
+				self.$fields = [$field];
+			};
+		});
+
+		this.$fieldWraps = this.$fields;
+	};
+
+	exports.default = linkageSelect;
+
+/***/ },
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1058,7 +1174,7 @@
 			// 绘制表单过程中，添加表单项前，触发"fieldWillCreate"事件，用于更改该表单项的配置
 			self.$parent.trigger("fieldWillCreate", props, index, self);
 
-			formItem = new _FormItemReconcile2.default[item.type](props);
+			formItem = new _FormItemReconcile2.default[item.type](props, self);
 			formItem.index = index;
 			$formItem = formItem.init();
 

@@ -5,6 +5,7 @@ import Checkbox from "./Checkbox";
 import Select from "./Select";
 import Upload from "./Upload";
 import Cascader from "./Cascader";
+import LinkageSelect from "./LinkageSelect";
 
 let FormItemReconcile={
 	input:Input,
@@ -13,7 +14,8 @@ let FormItemReconcile={
 	checkbox:Checkbox,
 	select:Select,
 	upload:Upload,
-	cascader:Cascader
+	cascader:Cascader,
+	linkageSelect:LinkageSelect
 };
 
 export default FormItemReconcile

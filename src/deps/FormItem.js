@@ -2,9 +2,10 @@ import getValue from "../util/getValue";
 import setValue from "../util/setValue";
 
 class FormItem{
-	constructor(options){
+	constructor(options,form){
 		this.scheme=$.extend(true,{},options.scheme);
 		delete options.scheme;
+		this.relForm=form;
 		this.setting=$.extend(true,{},options);
 	};
 };
@@ -41,6 +42,22 @@ FormItem.prototype.render=function(){
 	this._createField();
 
 	this.$outerWrap.append(self.$label);
+	$.each(self.$fieldWraps,function(_,$fieldWrap){
+		self.$innerWrap.append($fieldWrap);
+	});
+	this.$outerWrap.append(self.$innerWrap);
+};
+
+FormItem.prototype.refresh=function(setting){
+	var self=this;
+
+	this.setting=setting;
+
+	this.$innerWrap.html("");
+	this.$fieldWraps=[];
+	this.$fields=[];
+
+	this._createField();
 	$.each(self.$fieldWraps,function(_,$fieldWrap){
 		self.$innerWrap.append($fieldWrap);
 	});
