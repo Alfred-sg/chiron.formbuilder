@@ -1,4 +1,5 @@
 import FormItem from "./FormItem";
+import getValue from "../util/getValue";
 
 class linkageSelect extends FormItem{
 	constructor(options){
@@ -10,11 +11,10 @@ class linkageSelect extends FormItem{
 linkageSelect.prototype._createField=function(){
 	let self=this,
 		props=$.extend(true,{},self.scheme.field,self.setting);
-		console.log(self.setting)
 
 	delete props.label;
 
-	$.each(props.items,function(_,selectOpts){
+	$.each(props.items,function(index,selectOpts){
 		let $field,props,
 			items=selectOpts.options;
 
@@ -28,13 +28,29 @@ linkageSelect.prototype._createField=function(){
 		});
 
 		$field.on("change",function(){
-			self.refresh({
-				label:"级联下拉框",
-				items:[
-					{name:"linkageSelect1",options:[{text:"11111",value:"1"},{text:"2",value:"2"}]},
-					{name:"linkageSelect2",options:[{text:"3",value:"3"},{text:"4",value:"4"}]}
-				]
+			if ( !self.ajax ) return;
+
+			let $relFields=self.$fields.slice(0,index+1),
+				prevData={};
+
+			$.each($relFields,function(_,$f){
+				getValue($f,prevData);
 			});
+
+			self.setting.items.slice(0,index);
+			self.ajax.data={value:$(this).val()};
+			self.ajax.callback=function(){
+				self.setData(prevData);
+			};
+			self._remoteField(self.setting);
+
+			// self.refresh({
+			// 	label:"级联下拉框",
+			// 	items:[
+			// 		{name:"linkageSelect1",options:[{text:"11111",value:"1"},{text:"2",value:"2"}]},
+			// 		{name:"linkageSelect2",options:[{text:"3",value:"3"},{text:"4",value:"4"}]}
+			// 	]
+			// });
 		});
 
 		if ( self.$fields ){

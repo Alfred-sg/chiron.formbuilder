@@ -33,19 +33,66 @@ FormItem.prototype._createInnerWrap=function(){
 
 FormItem.prototype._createField=function(){};
 
+FormItem.prototype._appendField=function(){
+	let self=this;
+
+	if ( this.setting.ajax ){
+		this._remoteFiled(self.setting);
+		return;
+	};
+
+	this._createField();
+
+	$.each(self.$fieldWraps,function(_,$fieldWrap){
+		self.$innerWrap.append($fieldWrap);
+	});
+	this.$outerWrap.append(self.$innerWrap);
+};
+
+FormItem.prototype._remoteFiled=function(setting){
+	let self=this,
+		ajax,
+		prev=$.extend(true,{},setting);
+
+	if ( self.ajax ){
+		ajax=self.ajax;
+	}else{
+		ajax=self.ajax=setting.ajax;
+		delete prev.ajax;
+	};
+
+	if ( !ajax.formatReq ){
+		ajax.formatReq=function(data){
+			return data;
+		};
+	};
+
+	if ( !ajax.formatRes ){
+		ajax.formatRes=function(res,prev){
+			return $.extend(true,{},prev,res);
+		};
+	};
+
+	if ( !ajax.callback ){
+		ajax.callback=function(){};
+	};
+
+	$.post(ajax.url,ajax.data,function(res){
+		let current=ajax.formatRes(res,prev);
+		self.refresh(setting);
+		ajax.callback.call(self);
+	});
+};
+
 FormItem.prototype.render=function(){
 	let self=this;
 
 	this._createOuterWrap();
 	this._createLabel();
 	this._createInnerWrap();
-	this._createField();
 
 	this.$outerWrap.append(self.$label);
-	$.each(self.$fieldWraps,function(_,$fieldWrap){
-		self.$innerWrap.append($fieldWrap);
-	});
-	this.$outerWrap.append(self.$innerWrap);
+	this._appendField();
 };
 
 FormItem.prototype.refresh=function(setting){
@@ -56,12 +103,7 @@ FormItem.prototype.refresh=function(setting){
 	this.$innerWrap.html("");
 	this.$fieldWraps=[];
 	this.$fields=[];
-
-	this._createField();
-	$.each(self.$fieldWraps,function(_,$fieldWrap){
-		self.$innerWrap.append($fieldWrap);
-	});
-	this.$outerWrap.append(self.$innerWrap);
+	this._appendField();
 };
 
 FormItem.prototype.bindFieldChangeEvent=function(fn){

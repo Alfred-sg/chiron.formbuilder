@@ -89,7 +89,7 @@
 
 	var _createClass2 = _interopRequireDefault(_createClass);
 
-	var _Form = __webpack_require__(21);
+	var _Form = __webpack_require__(16);
 
 	var _Form2 = _interopRequireDefault(_Form);
 
@@ -319,19 +319,66 @@
 
 	FormItem.prototype._createField = function () {};
 
+	FormItem.prototype._appendField = function () {
+		var self = this;
+
+		if (this.setting.ajax) {
+			this._remoteFiled(self.setting);
+			return;
+		};
+
+		this._createField();
+
+		$.each(self.$fieldWraps, function (_, $fieldWrap) {
+			self.$innerWrap.append($fieldWrap);
+		});
+		this.$outerWrap.append(self.$innerWrap);
+	};
+
+	FormItem.prototype._remoteFiled = function (setting) {
+		var self = this,
+		    ajax = void 0,
+		    prev = $.extend(true, {}, setting);
+
+		if (self.ajax) {
+			ajax = self.ajax;
+		} else {
+			ajax = self.ajax = setting.ajax;
+			delete prev.ajax;
+		};
+
+		if (!ajax.formatReq) {
+			ajax.formatReq = function (data) {
+				return data;
+			};
+		};
+
+		if (!ajax.formatRes) {
+			ajax.formatRes = function (res, prev) {
+				return $.extend(true, {}, prev, res);
+			};
+		};
+
+		if (!ajax.callback) {
+			ajax.callback = function () {};
+		};
+
+		$.post(ajax.url, ajax.data, function (res) {
+			var current = ajax.formatRes(res, prev);
+			self.refresh(setting);
+			ajax.callback.call(self);
+		});
+	};
+
 	FormItem.prototype.render = function () {
 		var self = this;
 
 		this._createOuterWrap();
 		this._createLabel();
 		this._createInnerWrap();
-		this._createField();
 
 		this.$outerWrap.append(self.$label);
-		$.each(self.$fieldWraps, function (_, $fieldWrap) {
-			self.$innerWrap.append($fieldWrap);
-		});
-		this.$outerWrap.append(self.$innerWrap);
+		this._appendField();
 	};
 
 	FormItem.prototype.refresh = function (setting) {
@@ -342,12 +389,7 @@
 		this.$innerWrap.html("");
 		this.$fieldWraps = [];
 		this.$fields = [];
-
-		this._createField();
-		$.each(self.$fieldWraps, function (_, $fieldWrap) {
-			self.$innerWrap.append($fieldWrap);
-		});
-		this.$outerWrap.append(self.$innerWrap);
+		this._appendField();
 	};
 
 	FormItem.prototype.bindFieldChangeEvent = function (fn) {
@@ -500,11 +542,7 @@
 
 	var _Upload2 = _interopRequireDefault(_Upload);
 
-	var _Cascader = __webpack_require__(15);
-
-	var _Cascader2 = _interopRequireDefault(_Cascader);
-
-	var _LinkageSelect = __webpack_require__(20);
+	var _LinkageSelect = __webpack_require__(15);
 
 	var _LinkageSelect2 = _interopRequireDefault(_LinkageSelect);
 
@@ -517,7 +555,6 @@
 		checkbox: _Checkbox2.default,
 		select: _Select2.default,
 		upload: _Upload2.default,
-		cascader: _Cascader2.default,
 		linkageSelect: _LinkageSelect2.default
 	};
 
@@ -900,98 +937,9 @@
 
 	var _FormItem3 = _interopRequireDefault(_FormItem2);
 
-	__webpack_require__(16);
+	var _getValue = __webpack_require__(6);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Cascader = function (_FormItem) {
-		_inherits(Cascader, _FormItem);
-
-		function Cascader(options) {
-			_classCallCheck(this, Cascader);
-
-			var _this = _possibleConstructorReturn(this, (Cascader.__proto__ || Object.getPrototypeOf(Cascader)).call(this, options));
-
-			_this.type = "cascader";
-			return _this;
-		}
-
-		return Cascader;
-	}(_FormItem3.default);
-
-	;
-
-	Cascader.prototype._createField = function () {
-		var self = this,
-		    props = $.extend(true, {}, self.scheme.field, self.setting);
-
-		delete props.label;
-		props.readonly = true;
-		props.autocomplete = "off";
-
-		this.$fieldWraps = this.$fields = [$("<input>", props).css({ backgroundColor: "white" })];
-
-		this._bindSepcialEvent();
-	};
-
-	function getItems(index) {
-		return [[{ text: "1", value: "1" }, { text: "2", value: "2" }], [{ text: "3", value: "3" }, { text: "4", value: "4" }]];
-	};
-
-	Cascader.prototype._bindSepcialEvent = function () {
-		var self = this,
-		    $ulOrigin = $("<ul/>", { class: "ant-cascader-menu" }),
-		    $liOrigin = $("<li/>", { class: "ant-cascader-menu-item ant-cascader-menu-item-expand" }),
-		    $cascaderMenus = $("<div/>", { class: "ant-cascader-menus" });
-
-		var columns = getItems(),
-		    $initUl = $ulOrigin.clone();
-
-		$.each(columns, function (_, items) {
-			var $menu = $ulOrigin.clone();
-			$.each(items, function (_, item) {
-
-				$menu.append($liOrigin.clone().text(item.text).attr("value", item.value));
-			});
-			$cascaderMenus.append($menu);
-		});
-
-		this.$fields[0].on("click", function () {
-			var that = this;
-			$cascaderMenus.insertAfter(that);
-		});
-	};
-
-	exports.default = Cascader;
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-
-/***/ },
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _FormItem2 = __webpack_require__(5);
-
-	var _FormItem3 = _interopRequireDefault(_FormItem2);
+	var _getValue2 = _interopRequireDefault(_getValue);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1021,11 +969,10 @@
 	linkageSelect.prototype._createField = function () {
 		var self = this,
 		    props = $.extend(true, {}, self.scheme.field, self.setting);
-		console.log(self.setting);
 
 		delete props.label;
 
-		$.each(props.items, function (_, selectOpts) {
+		$.each(props.items, function (index, selectOpts) {
 			var $field = void 0,
 			    props = void 0,
 			    items = selectOpts.options;
@@ -1040,10 +987,29 @@
 			});
 
 			$field.on("change", function () {
-				self.refresh({
-					label: "级联下拉框",
-					items: [{ name: "linkageSelect1", options: [{ text: "11111", value: "1" }, { text: "2", value: "2" }] }, { name: "linkageSelect2", options: [{ text: "3", value: "3" }, { text: "4", value: "4" }] }]
+				if (!self.ajax) return;
+
+				var $relFields = self.$fields.slice(0, index + 1),
+				    prevData = {};
+
+				$.each($relFields, function (_, $f) {
+					(0, _getValue2.default)($f, prevData);
 				});
+
+				self.setting.items.slice(0, index);
+				self.ajax.data = { value: $(this).val() };
+				self.ajax.callback = function () {
+					self.setData(prevData);
+				};
+				self._remoteField(self.setting);
+
+				// self.refresh({
+				// 	label:"级联下拉框",
+				// 	items:[
+				// 		{name:"linkageSelect1",options:[{text:"11111",value:"1"},{text:"2",value:"2"}]},
+				// 		{name:"linkageSelect2",options:[{text:"3",value:"3"},{text:"4",value:"4"}]}
+				// 	]
+				// });
 			});
 
 			if (self.$fields) {
@@ -1059,7 +1025,7 @@
 	exports.default = linkageSelect;
 
 /***/ },
-/* 21 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
